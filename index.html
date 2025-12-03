@@ -151,7 +151,7 @@
             min-height: 16px;
         }
 
-        /* 底部按鈕（在背景卡片內） */
+        /* 底部觸控按鈕（背景卡片內） */
         .mobile-controls {
             margin-top: 4px;
             padding-top: 8px;
@@ -166,8 +166,10 @@
 
         .mobile-controls-row {
             display: flex;
-            width: 100%;
-            justify-content: space-between;
+            justify-content: center;
+            /* 集中在中間 */
+            gap: 12px;
+            /* 按鈕間距 */
             margin-bottom: 6px;
         }
 
@@ -176,12 +178,11 @@
         }
 
         .mobile-controls button {
-            flex: 1;
-            margin: 0 6px;
+            flex: 1 0 auto;
+            max-width: 120px;
+            /* ★ 按鈕寬度上限：縮短一半左右 ★ */
             padding: 8px 0;
-            /* ↓ 高度縮小 */
             font-size: 14px;
-            /* ↓ 字體縮小 */
             font-weight: 600;
             border-radius: 10px;
             border: none;
@@ -217,7 +218,7 @@
 <body>
     <div class="tetris-wrapper">
         <div class="tetris-main">
-            <!-- 遊戲主棋盤（放大） -->
+            <!-- 遊戲主棋盤（放大版） -->
             <canvas id="board" width="320" height="640"></canvas>
 
             <!-- 側邊資訊區 -->
@@ -267,7 +268,7 @@
             </div>
         </div>
 
-        <!-- 底部按鈕（手機 / 平板 / 滑鼠都能用） -->
+        <!-- 底部觸控按鈕（手機 / 平板 / 滑鼠都能用） -->
         <div class="mobile-controls">
             <div class="mobile-controls-title">觸控操作</div>
             <div class="mobile-controls-row">
@@ -287,7 +288,7 @@
         // ===== 遊戲基本設定 =====
         const COLS = 10;
         const ROWS = 20;
-        const BLOCK_SIZE = 32; // 一格像素大小（變大）
+        const BLOCK_SIZE = 32; // 一格像素大小（放大）
 
         const canvas = document.getElementById("board");
         const ctx = canvas.getContext("2d");
@@ -406,7 +407,6 @@
                     if (m[y][x] !== 0) {
                         const newX = x + o.x;
                         const newY = y + o.y;
-
                         if (newX < 0 || newX >= COLS || newY >= ROWS) return true;
                         if (newY >= 0 && board[newY][newX] !== 0) return true;
                     }
@@ -474,13 +474,13 @@
         function drawCell(x, y, colorIndex, context, cellSize) {
             const px = x * cellSize;
             const py = y * cellSize;
-
             const baseColor = COLORS[colorIndex];
             if (!baseColor) return;
 
             context.fillStyle = baseColor;
             context.fillRect(px, py, cellSize, cellSize);
 
+            // 上方高光
             context.beginPath();
             context.moveTo(px, py);
             context.lineTo(px + cellSize, py);
@@ -490,6 +490,7 @@
             context.fillStyle = "rgba(255, 255, 255, 0.32)";
             context.fill();
 
+            // 左側高光
             context.beginPath();
             context.moveTo(px, py);
             context.lineTo(px + 3, py + 3);
@@ -499,6 +500,7 @@
             context.fillStyle = "rgba(255, 255, 255, 0.22)";
             context.fill();
 
+            // 下方陰影
             context.beginPath();
             context.moveTo(px, py + cellSize);
             context.lineTo(px + cellSize, py + cellSize);
@@ -508,6 +510,7 @@
             context.fillStyle = "rgba(0, 0, 0, 0.38)";
             context.fill();
 
+            // 右側陰影
             context.beginPath();
             context.moveTo(px + cellSize, py);
             context.lineTo(px + cellSize, py + cellSize);
@@ -516,10 +519,12 @@
             context.closePath();
             context.fillStyle = "rgba(0, 0, 0, 0.45)";
 
+            // 外框
             context.strokeStyle = "rgba(0, 0, 0, 0.7)";
             context.lineWidth = 1.5;
             context.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
 
+            // 內框
             context.strokeStyle = "rgba(255, 255, 255, 0.18)";
             context.lineWidth = 1;
             context.strokeRect(px + 2, py + 2, cellSize - 4, cellSize - 4);
@@ -547,6 +552,7 @@
                 });
             }
 
+            // 棋盤格線
             ctx.save();
             ctx.strokeStyle = "rgba(255,255,255,0.05)";
             ctx.lineWidth = 1;
@@ -603,7 +609,6 @@
                         nextCtx.lineTo(px, py + cellSize);
                         nextCtx.closePath();
                         nextCtx.fillStyle = "rgba(255, 255, 255, 0.22)";
-                        nextCtx.fill();
 
                         nextCtx.beginPath();
                         nextCtx.moveTo(px, py + cellSize);
