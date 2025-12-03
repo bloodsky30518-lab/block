@@ -32,7 +32,7 @@
             border-radius: 24px;
             box-shadow: 0 24px 55px rgba(0, 0, 0, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            width: min(960px, 100%);
+            width: min(980px, 100%);
         }
 
         .tetris-main {
@@ -151,7 +151,7 @@
             min-height: 16px;
         }
 
-        /* 底部大按鈕，放在背景卡片內 */
+        /* 底部按鈕（在背景卡片內） */
         .mobile-controls {
             margin-top: 4px;
             padding-top: 8px;
@@ -168,7 +168,7 @@
             display: flex;
             width: 100%;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .mobile-controls-row:last-child {
@@ -178,14 +178,16 @@
         .mobile-controls button {
             flex: 1;
             margin: 0 6px;
-            padding: 16px 0;
-            font-size: 22px;
-            font-weight: 700;
-            border-radius: 12px;
+            padding: 8px 0;
+            /* ↓ 高度縮小 */
+            font-size: 14px;
+            /* ↓ 字體縮小 */
+            font-weight: 600;
+            border-radius: 10px;
             border: none;
             background: linear-gradient(135deg, #444, #222);
             color: #fff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
         }
 
         @media (max-width: 900px) {
@@ -205,13 +207,8 @@
 
         @media (max-width: 600px) {
             #board {
-                transform: scale(0.9);
+                transform: scale(0.95);
                 transform-origin: top center;
-            }
-
-            .mobile-controls button {
-                padding: 14px 0;
-                font-size: 20px;
             }
         }
     </style>
@@ -220,8 +217,8 @@
 <body>
     <div class="tetris-wrapper">
         <div class="tetris-main">
-            <!-- 遊戲主棋盤 -->
-            <canvas id="board" width="300" height="600"></canvas>
+            <!-- 遊戲主棋盤（放大） -->
+            <canvas id="board" width="320" height="640"></canvas>
 
             <!-- 側邊資訊區 -->
             <div class="sidebar">
@@ -270,9 +267,9 @@
             </div>
         </div>
 
-        <!-- 手機 / 觸控底部大按鍵（現在也在背景裡） -->
+        <!-- 底部按鈕（手機 / 平板 / 滑鼠都能用） -->
         <div class="mobile-controls">
-            <div class="mobile-controls-title">觸控操作（手機 / 平板 / 滑鼠都可點）</div>
+            <div class="mobile-controls-title">觸控操作</div>
             <div class="mobile-controls-row">
                 <button data-action="left">←</button>
                 <button data-action="rotate">⟳</button>
@@ -290,7 +287,7 @@
         // ===== 遊戲基本設定 =====
         const COLS = 10;
         const ROWS = 20;
-        const BLOCK_SIZE = 30; // 一格像素大小
+        const BLOCK_SIZE = 32; // 一格像素大小（變大）
 
         const canvas = document.getElementById("board");
         const ctx = canvas.getContext("2d");
@@ -306,7 +303,6 @@
         const startBtn = document.getElementById("startBtn");
         const resetBtn = document.getElementById("resetBtn");
 
-        // 方塊顏色（索引 0 代表空格）
         const COLORS = [
             null,
             "#21e4ff", // I
@@ -318,7 +314,6 @@
             "#ff6f6f"  // Z
         ];
 
-        // 7 種方塊形狀
         const SHAPES = [
             [],
             [ // I
@@ -358,7 +353,6 @@
             ]
         ];
 
-        // ===== 遊戲狀態變數 =====
         let board = createBoard(ROWS, COLS);
         let currentPiece = null;
         let nextPieceType = randomShapeType();
@@ -371,7 +365,6 @@
         let isPaused = true;
         let isGameOver = false;
 
-        // ===== 工具函式 =====
         function createBoard(rows, cols) {
             const matrix = [];
             for (let r = 0; r < rows; r++) {
@@ -388,7 +381,7 @@
             return {
                 x: 3,
                 y: -2,
-                type: type,
+                type,
                 matrix: SHAPES[type].map(row => row.slice())
             };
         }
@@ -414,12 +407,8 @@
                         const newX = x + o.x;
                         const newY = y + o.y;
 
-                        if (newX < 0 || newX >= COLS || newY >= ROWS) {
-                            return true;
-                        }
-                        if (newY >= 0 && board[newY][newX] !== 0) {
-                            return true;
-                        }
+                        if (newX < 0 || newX >= COLS || newY >= ROWS) return true;
+                        if (newY >= 0 && board[newY][newX] !== 0) return true;
                     }
                 }
             }
@@ -446,7 +435,6 @@
             linesEl.textContent = lines;
         }
 
-        // 升級提示
         function showLevelUp(level) {
             statusText.textContent = `恭喜你提升到第 ${level} 等級！速度稍微加快了。`;
             setTimeout(() => {
@@ -483,7 +471,6 @@
             }
         }
 
-        // ===== 繪圖相關 =====
         function drawCell(x, y, colorIndex, context, cellSize) {
             const px = x * cellSize;
             const py = y * cellSize;
@@ -494,7 +481,6 @@
             context.fillStyle = baseColor;
             context.fillRect(px, py, cellSize, cellSize);
 
-            // 上方高光
             context.beginPath();
             context.moveTo(px, py);
             context.lineTo(px + cellSize, py);
@@ -504,7 +490,6 @@
             context.fillStyle = "rgba(255, 255, 255, 0.32)";
             context.fill();
 
-            // 左側高光
             context.beginPath();
             context.moveTo(px, py);
             context.lineTo(px + 3, py + 3);
@@ -514,7 +499,6 @@
             context.fillStyle = "rgba(255, 255, 255, 0.22)";
             context.fill();
 
-            // 下方陰影
             context.beginPath();
             context.moveTo(px, py + cellSize);
             context.lineTo(px + cellSize, py + cellSize);
@@ -524,7 +508,6 @@
             context.fillStyle = "rgba(0, 0, 0, 0.38)";
             context.fill();
 
-            // 右側陰影
             context.beginPath();
             context.moveTo(px + cellSize, py);
             context.lineTo(px + cellSize, py + cellSize);
@@ -532,14 +515,11 @@
             context.lineTo(px + cellSize - 3, py + 3);
             context.closePath();
             context.fillStyle = "rgba(0, 0, 0, 0.45)";
-            context.fill();
 
-            // 外框
             context.strokeStyle = "rgba(0, 0, 0, 0.7)";
             context.lineWidth = 1.5;
             context.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
 
-            // 內框
             context.strokeStyle = "rgba(255, 255, 255, 0.18)";
             context.lineWidth = 1;
             context.strokeRect(px + 2, py + 2, cellSize - 4, cellSize - 4);
@@ -561,15 +541,12 @@
                         if (value !== 0) {
                             const drawX = x + currentPiece.x;
                             const drawY = y + currentPiece.y;
-                            if (drawY >= 0) {
-                                drawCell(drawX, drawY, currentPiece.type, ctx, BLOCK_SIZE);
-                            }
+                            if (drawY >= 0) drawCell(drawX, drawY, currentPiece.type, ctx, BLOCK_SIZE);
                         }
                     });
                 });
             }
 
-            // 棋盤格線
             ctx.save();
             ctx.strokeStyle = "rgba(255,255,255,0.05)";
             ctx.lineWidth = 1;
@@ -604,14 +581,12 @@
                     if (value !== 0) {
                         const px = offsetX + x * cellSize;
                         const py = offsetY + y * cellSize;
-
                         const baseColor = COLORS[nextPieceType];
                         if (!baseColor) return;
 
                         nextCtx.fillStyle = baseColor;
                         nextCtx.fillRect(px, py, cellSize, cellSize);
 
-                        // 上方高光
                         nextCtx.beginPath();
                         nextCtx.moveTo(px, py);
                         nextCtx.lineTo(px + cellSize, py);
@@ -621,7 +596,6 @@
                         nextCtx.fillStyle = "rgba(255, 255, 255, 0.32)";
                         nextCtx.fill();
 
-                        // 左側高光
                         nextCtx.beginPath();
                         nextCtx.moveTo(px, py);
                         nextCtx.lineTo(px + 3, py + 3);
@@ -631,7 +605,6 @@
                         nextCtx.fillStyle = "rgba(255, 255, 255, 0.22)";
                         nextCtx.fill();
 
-                        // 下方陰影
                         nextCtx.beginPath();
                         nextCtx.moveTo(px, py + cellSize);
                         nextCtx.lineTo(px + cellSize, py + cellSize);
@@ -639,9 +612,7 @@
                         nextCtx.lineTo(px + 3, py + cellSize - 3);
                         nextCtx.closePath();
                         nextCtx.fillStyle = "rgba(0, 0, 0, 0.38)";
-                        nextCtx.fill();
 
-                        // 右側陰影
                         nextCtx.beginPath();
                         nextCtx.moveTo(px + cellSize, py);
                         nextCtx.lineTo(px + cellSize, py + cellSize);
@@ -650,7 +621,6 @@
                         nextCtx.closePath();
                         nextCtx.fillStyle = "rgba(0, 0, 0, 0.45)";
 
-                        // 外框 & 內框
                         nextCtx.strokeStyle = "rgba(0, 0, 0, 0.7)";
                         nextCtx.lineWidth = 1.2;
                         nextCtx.strokeRect(px + 0.5, py + 0.5, cellSize - 1, cellSize - 1);
@@ -663,7 +633,6 @@
             });
         }
 
-        // ===== 遊戲流程控制 =====
         function spawnPiece() {
             currentPiece = createPiece(nextPieceType);
             nextPieceType = randomShapeType();
@@ -709,9 +678,7 @@
         function movePiece(dir) {
             if (!currentPiece || isGameOver) return;
             currentPiece.x += dir;
-            if (collide(board, currentPiece)) {
-                currentPiece.x -= dir;
-            }
+            if (collide(board, currentPiece)) currentPiece.x -= dir;
         }
 
         function rotatePiece() {
@@ -771,7 +738,6 @@
             statusText.textContent = isPaused ? "暫停中" : "";
         }
 
-        // ===== 鍵盤控制 =====
         document.addEventListener("keydown", (e) => {
             if (e.repeat) return;
 
@@ -803,7 +769,6 @@
             }
         });
 
-        // ===== 按鈕事件 =====
         startBtn.addEventListener("click", () => {
             if (isGameOver) return;
             if (!currentPiece) spawnPiece();
@@ -814,7 +779,6 @@
             resetGame();
         });
 
-        // ===== 觸控按鈕事件 =====
         const mobileControls = document.querySelector(".mobile-controls");
         if (mobileControls) {
             mobileControls.addEventListener("pointerdown", (e) => {
@@ -845,7 +809,6 @@
             });
         }
 
-        // ===== 初始化 =====
         resetGame();
         requestAnimationFrame(update);
     </script>
