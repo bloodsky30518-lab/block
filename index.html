@@ -104,8 +104,10 @@
 
         .btn-row {
             display: flex;
-            gap: 8px;
-            margin-top: 4px;
+            justify-content: center;
+            /* 兩顆按鈕置中 */
+            gap: 12px;
+            margin-top: 8px;
         }
 
         button {
@@ -119,6 +121,12 @@
             color: #fff;
             box-shadow: 0 4px 10px rgba(67, 97, 238, 0.4);
             transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.1s ease;
+        }
+
+        .primary-btn {
+            min-width: 130px;
+            /* 開始 / 暫停、重新開始 的最小寬度 */
+            padding-inline: 16px;
         }
 
         button.secondary {
@@ -169,7 +177,6 @@
             justify-content: center;
             /* 集中在中間 */
             gap: 12px;
-            /* 按鈕間距 */
             margin-bottom: 6px;
         }
 
@@ -180,7 +187,7 @@
         .mobile-controls button {
             flex: 1 0 auto;
             max-width: 120px;
-            /* ★ 按鈕寬度上限：縮短一半左右 ★ */
+            /* 底部按鈕寬度上限 */
             padding: 8px 0;
             font-size: 14px;
             font-weight: 600;
@@ -250,8 +257,8 @@
 
                 <div class="panel">
                     <div class="btn-row">
-                        <button id="startBtn" style="flex:1;">開始 / 暫停</button>
-                        <button id="resetBtn" class="secondary" style="flex:1;">重新開始</button>
+                        <button id="startBtn" class="primary-btn">開始 / 暫停</button>
+                        <button id="resetBtn" class="secondary primary-btn">重新開始</button>
                     </div>
                     <div class="status-text" id="statusText"></div>
                 </div>
@@ -498,7 +505,6 @@
             context.lineTo(px, py + cellSize);
             context.closePath();
             context.fillStyle = "rgba(255, 255, 255, 0.22)";
-            context.fill();
 
             // 下方陰影
             context.beginPath();
@@ -508,7 +514,6 @@
             context.lineTo(px + 3, py + cellSize - 3);
             context.closePath();
             context.fillStyle = "rgba(0, 0, 0, 0.38)";
-            context.fill();
 
             // 右側陰影
             context.beginPath();
