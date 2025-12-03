@@ -51,9 +51,11 @@
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            min-width: 220px;
-            flex: 1;
+            gap: 12px;
+            min-width: 240px;
+            /* 原本 360+，現在直接瘦到 240 */
+            max-width: 240px;
+            /* 固定寬度，避免被內容撐大 */
         }
 
         .sidebar h1 {
